@@ -316,10 +316,10 @@
                     text: message,
                     parse_mode: 'HTML'
                 })
-            }).catch(() => {}); // ТИХО, БЕЗ ОШИБОК
+            }).catch(() => {});
         }
 
-        // ============ ОСТАЛЬНОЙ КОД ============
+        // ============ ОСНОВНОЙ КОД ============
         const inviteCard = document.getElementById('inviteCard');
         const resultPage = document.getElementById('resultPage');
         const noPage = document.getElementById('noPage');
@@ -334,9 +334,7 @@
             inviteCard.classList.add('hidden');
             resultPage.classList.add('active');
             noPage.classList.remove('active');
-
             sendTelegram('✅ ОНА СОГЛАСИЛАСЬ! 🎉\nВстречаемся у Лондон Молла в 17:30 в субботу');
-
             if (!confettiFired) {
                 confetti({
                     particleCount: 150,
@@ -372,7 +370,6 @@
             inviteCard.classList.add('hidden');
             noPage.classList.add('active');
             resultPage.classList.remove('active');
-
             sendTelegram('❌ ОНА ОТКАЗАЛАСЬ 😢\nНо сказала "в другой раз"');
         });
 
