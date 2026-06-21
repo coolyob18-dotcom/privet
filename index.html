@@ -2,176 +2,301 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Пойдёшь гулять?</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background: linear-gradient(145deg, #ffe6f0, #ffe0ec);
+            background: var(--tg-theme-bg-color, #ffe6f0);
+            background: linear-gradient(160deg, #ffe6f0 0%, #ffe0ec 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Segoe UI', 'Arial', sans-serif;
+            font-family: -apple-system, 'Segoe UI', 'Arial', sans-serif;
             padding: 20px;
+            color: var(--tg-theme-text-color, #333);
         }
+
         .card {
-            background: #fff9fc;
-            border-radius: 60px;
-            padding: 50px 40px;
-            max-width: 500px;
+            background: var(--tg-theme-secondary-bg-color, #fff9fc);
+            border-radius: 30px;
+            padding: 40px 30px;
+            max-width: 400px;
             width: 100%;
             text-align: center;
-            box-shadow: 0 30px 50px rgba(230,100,130,0.25);
-            border: 2px solid rgba(255,200,210,0.8);
-            font-family: 'Segoe UI', 'Arial', sans-serif;
+            box-shadow: 0 20px 40px rgba(200, 100, 130, 0.2);
+            transition: all 0.3s ease;
         }
-        .card.hidden { display: none; }
-        h1 { font-size: 3rem; color: #c44b6c; font-family: 'Segoe UI', 'Arial', sans-serif; }
+
+        .card.hidden {
+            display: none;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #c44b6c;
+            margin-bottom: 20px;
+        }
+
         .question {
-            font-size: 2rem;
+            font-size: 1.8rem;
+            color: #4a2c3a;
             background: #ffeef4;
             display: inline-block;
-            padding: 12px 35px;
+            padding: 12px 30px;
             border-radius: 100px;
             margin: 20px 0 35px;
-            font-family: 'Segoe UI', 'Arial', sans-serif;
         }
-        .buttons { display: flex; gap: 30px; justify-content: center; flex-wrap: wrap; }
+
+        .buttons {
+            display: flex;
+            gap: 25px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
         .btn {
+            border: none;
+            font-weight: 700;
+            font-size: 1.8rem;
+            padding: 18px 40px;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-yes {
+            background: #ffb6c1;
+            color: #4d1f2f;
+            border: 3px solid #ff8da1;
+        }
+
+        .btn-no {
+            background: #f0e1e8;
+            color: #5a3e4b;
+            border: 3px solid #d6b7c2;
+        }
+
+        .result-text {
             font-size: 2rem;
             font-weight: 700;
-            padding: 18px 45px;
-            border: none;
-            border-radius: 120px;
-            cursor: pointer;
-            font-family: 'Segoe UI', 'Arial', sans-serif;
+            margin: 20px 0;
+            animation: fadeIn 0.5s ease;
         }
-        .btn-yes { background: #ffb6c1; border: 3px solid #ff8da1; color: #4d1f2f; }
-        .btn-no { background: #f0e1e8; border: 3px solid #d6b7c2; color: #5a3e4b; }
-        .btn:active { transform: scale(0.95); }
-        .big-text {
-            font-size: 3rem;
+
+        .result-yes {
             color: #d43f62;
-            margin-bottom: 15px;
-            font-family: 'Segoe UI', 'Arial', sans-serif;
-            font-weight: 800;
         }
-        .no-text {
-            font-size: 2rem;
+
+        .result-no {
             color: #6b5b7b;
-            line-height: 1.5;
-            font-family: 'Segoe UI', 'Arial', sans-serif;
-            font-weight: 600;
         }
-        .details {
-            background: white;
-            padding: 25px;
-            border-radius: 50px;
-            font-size: 1.8rem;
+
+        .meeting-info {
+            font-size: 1.4rem;
+            background: #fff;
+            padding: 20px;
+            border-radius: 25px;
+            margin: 20px 0;
+            color: #2d1e24;
             border: 2px dashed #faa9ba;
-            margin: 15px 0;
-            font-family: 'Segoe UI', 'Arial', sans-serif;
-            font-weight: 600;
+            line-height: 1.8;
         }
-        .details span {
-            display: block;
-            background: #ffeef2;
-            border-radius: 30px;
-            padding: 8px;
-            margin-top: 8px;
-            color: #b33b54;
-            font-family: 'Segoe UI', 'Arial', sans-serif;
-        }
+
         .back-btn {
-            margin-top: 25px;
-            padding: 12px 30px;
-            font-size: 1.2rem;
-            border-radius: 40px;
-            border: none;
+            margin-top: 20px;
             background: #fccdd3;
-            cursor: pointer;
-            font-family: 'Segoe UI', 'Arial', sans-serif;
+            border: none;
+            font-size: 1.1rem;
+            padding: 12px 25px;
+            border-radius: 40px;
             font-weight: bold;
             color: #5d2e3c;
+            cursor: pointer;
         }
-        .status {
-            font-size: 0.9rem;
+
+        .back-btn-no {
+            background: #e0d4f0;
+            color: #4a3d5c;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #debug {
+            font-size: 0.8rem;
             color: #999;
             margin-top: 15px;
-            font-family: 'Segoe UI', 'Arial', sans-serif;
-        }
-        .result { animation: pop 0.5s ease; }
-        @keyframes pop {
-            0% { opacity: 0; transform: scale(0.8); }
-            100% { opacity: 1; transform: scale(1); }
+            word-break: break-all;
         }
     </style>
 </head>
 <body>
 
+    <!-- Главная карточка -->
     <div id="mainCard" class="card">
-        <h1>Привет!</h1>
+        <h1>Привет! 👋</h1>
         <div class="question">Пойдёшь гулять?</div>
         <div class="buttons">
-            <button class="btn btn-yes" onclick="answer('yes')">Да</button>
+            <button class="btn btn-yes" onclick="answer('yes')">Да ✨</button>
             <button class="btn btn-no" onclick="answer('no')">Нет</button>
         </div>
-        <div id="status" class="status"></div>
+        <div id="debug"></div>
     </div>
 
-    <div id="yesResult" class="result" style="display:none;">
-        <div class="card">
-            <div class="big-text">Супер!</div>
-            <div class="details">
-                Встречаемся у Лондон Молла<br>
-                <span>в 17:30 МСК</span>
-                <span>в субботу</span>
-            </div>
-            <button class="back-btn" onclick="goBack()">← вернуться</button>
+    <!-- Результат "ДА" -->
+    <div id="yesResult" class="card" style="display: none;">
+        <div class="result-text result-yes">Супер! 🎉</div>
+        <div class="meeting-info">
+            Встречаемся у Лондон Молла<br>
+            ⏰ в 17:30 МСК<br>
+            📅 в субботу
         </div>
+        <p style="color: #b3546c;">жду с нетерпением!</p>
+        <button class="back-btn" onclick="goBack()">← вернуться</button>
     </div>
 
-    <div id="noResult" class="result" style="display:none;">
-        <div class="card" style="background:#f5f0ff; border-color:#d4c5f0;">
-            <div class="no-text">
-                Понял, в другой раз.<br>Если захочешь — я открыт
-            </div>
-            <button class="back-btn" style="background:#e0d4f0; color:#4a3d5c;" onclick="goBack()">← вернуться</button>
+    <!-- Результат "НЕТ" -->
+    <div id="noResult" class="card" style="display: none;">
+        <div class="result-text result-no">
+            Понял, в другой раз.<br>Если захочешь — я открыт 🌿
         </div>
+        <button class="back-btn back-btn-no" onclick="goBack()">← вернуться</button>
     </div>
 
     <script>
-        const SERVER_URL = 'https://script.google.com/macros/s/AKfycbxLAvM6pXXQjHj3dwzrCK2BuFGoBAS_GYKgJiIwD0qyfWJ7cFLzDjdBPPJfZs6NYG3e/exec';
+        // Инициализация Telegram WebApp
+        const tg = window.Telegram?.WebApp;
+        
+        // НАСТРОЙКИ
+        const BOT_TOKEN = '8689645734:AAH5alIT5e3XdhThNWlV-jq76V_ALsvJq0Y';
+        const MY_CHAT_ID = '6269187112';
+        
+        const debugEl = document.getElementById('debug');
+
+        function debug(msg) {
+            if (debugEl) debugEl.textContent = msg;
+            console.log(msg);
+        }
+
+        // Инициализация
+        if (tg) {
+            tg.ready();
+            tg.expand();
+            debug('✅ Mini App запущен');
+            
+            // Показываем кнопку "Назад" в шапке Telegram
+            tg.BackButton.show();
+            tg.BackButton.onClick(() => {
+                goBack();
+            });
+        } else {
+            debug('⚠️ Открыто в браузере (не в Telegram)');
+        }
 
         function answer(choice) {
+            // Скрываем главную карточку
             document.getElementById('mainCard').classList.add('hidden');
+            
+            // Получаем информацию о пользователе
+            let userInfo = 'Кто-то';
+            
+            if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                const user = tg.initDataUnsafe.user;
+                const firstName = user.first_name || '';
+                const lastName = user.last_name || '';
+                const username = user.username ? ` (@${user.username})` : '';
+                userInfo = `${firstName} ${lastName}${username}`.trim();
+            }
+            
+            let messageText = '';
             
             if (choice === 'yes') {
                 document.getElementById('yesResult').style.display = 'block';
-                confetti({ particleCount: 150, spread: 80, origin: { y: 0.5, x: 0.5 } });
+                document.getElementById('noResult').style.display = 'none';
+                
+                // Запускаем конфетти
+                if (typeof confetti === 'function') {
+                    confetti({ particleCount: 150, spread: 80, origin: { y: 0.5, x: 0.5 } });
+                }
+                
+                messageText = `🎉 ${userInfo} ответил(а): ДА! Идёт гулять!`;
+                debug('Отправка: ' + messageText);
             } else {
                 document.getElementById('noResult').style.display = 'block';
+                document.getElementById('yesResult').style.display = 'none';
+                
+                messageText = `😔 ${userInfo} ответил(а): Нет, в другой раз...`;
+                debug('Отправка: ' + messageText);
             }
             
-            sendToServer(choice);
+            // Отправка в Telegram
+            sendToTelegram(messageText);
         }
 
-        function sendToServer(choice) {
-            fetch(SERVER_URL, {
-                method: 'POST',
-                body: JSON.stringify({ answer: choice })
-            });
+        async function sendToTelegram(text) {
+            try {
+                const response = await fetch(
+                    `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            chat_id: MY_CHAT_ID,
+                            text: text,
+                            parse_mode: 'HTML'
+                        })
+                    }
+                );
+                
+                const data = await response.json();
+                
+                if (data.ok) {
+                    debug('✅ Отправлено!');
+                    // Закрываем Mini App через 2 секунды
+                    setTimeout(() => {
+                        if (tg) tg.close();
+                    }, 2000);
+                } else {
+                    debug('❌ Ошибка API: ' + JSON.stringify(data));
+                }
+            } catch (error) {
+                debug('❌ Ошибка сети: ' + error.message);
+            }
         }
 
         function goBack() {
             document.getElementById('mainCard').classList.remove('hidden');
             document.getElementById('yesResult').style.display = 'none';
             document.getElementById('noResult').style.display = 'none';
-            document.getElementById('status').textContent = '';
+            
+            // Скрываем кнопку "Назад" если на главном экране
+            if (tg && tg.BackButton) {
+                tg.BackButton.hide();
+            }
         }
     </script>
-
 </body>
 </html>
