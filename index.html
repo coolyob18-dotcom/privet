@@ -24,6 +24,9 @@
             font-size:1.7rem;color:#4a2c3a;background:#ffeef4;
             display:inline-block;padding:12px 30px;border-radius:100px;margin:20px 0 35px
         }
+        .hint{
+            font-size:1rem;color:#b3808c;margin-top:15px;font-style:italic
+        }
         .buttons{display:flex;gap:25px;justify-content:center;flex-wrap:wrap}
         .btn{
             border:none;font-weight:700;font-size:1.7rem;padding:16px 38px;
@@ -52,6 +55,7 @@
         <button class="btn btn-yes" onclick="ans('yes')">Да</button>
         <button class="btn btn-no" onclick="ans('no')">Нет</button>
     </div>
+    <div class="hint">выбор за тобой...</div>
 </div>
 <div id="yes" class="card hidden">
     <div class="result-text result-yes">Супер!</div>
