@@ -4,11 +4,234 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Пойдёшь гулять?</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: linear-gradient(145deg, #ffe6f0, #ffe0ec);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            padding: 20px;
+        }
+        .invite-card {
+            background: #fff9fc;
+            box-shadow: 0 30px 50px rgba(230, 100, 130, 0.25);
+            border-radius: 60px;
+            padding: 50px 40px 55px;
+            max-width: 550px;
+            width: 100%;
+            text-align: center;
+            border: 2px solid rgba(255, 200, 210, 0.8);
+        }
+        .invite-card.hidden { display: none; }
+        h1 { font-size: 3rem; color: #c44b6c; margin-bottom: 15px; }
+        .question {
+            font-size: 2rem;
+            color: #4a2c3a;
+            margin: 20px 0 35px;
+            background: #ffeef4;
+            display: inline-block;
+            padding: 12px 35px;
+            border-radius: 100px;
+        }
+        .buttons-area {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 35px;
+            margin: 25px 0 20px;
+        }
+        .btn {
+            border: none;
+            font-weight: 700;
+            font-size: 2rem;
+            padding: 18px 45px;
+            border-radius: 120px;
+            cursor: pointer;
+            box-shadow: 0 10px 18px rgba(0, 0, 0, 0.12);
+            background: white;
+        }
+        .btn-yes {
+            background: #ffb6c1;
+            color: #4d1f2f;
+            border: 3px solid #ff8da1;
+        }
+        .btn-yes:active {
+            background: #ff99b0;
+            transform: scale(0.95);
+        }
+        .btn-no {
+            background: #f0e1e8;
+            color: #5a3e4b;
+            border: 3px solid #d6b7c2;
+        }
+        .btn-no:active {
+            background: #e5d0d9;
+            transform: scale(0.95);
+        }
+        .result-page {
+            display: none;
+            background: #fff9fc;
+            border-radius: 70px;
+            padding: 45px 30px;
+            box-shadow: 0 40px 60px rgba(200, 80, 110, 0.4);
+            border: 2px solid #ffbfcc;
+            text-align: center;
+            max-width: 550px;
+            width: 100%;
+            animation: fadePop 0.5s ease;
+        }
+        .result-page.active { display: block; }
+        .no-page {
+            display: none;
+            background: #f5f0ff;
+            border-radius: 70px;
+            padding: 45px 30px;
+            box-shadow: 0 40px 60px rgba(130, 100, 180, 0.3);
+            border: 2px solid #d4c5f0;
+            text-align: center;
+            max-width: 550px;
+            width: 100%;
+            animation: fadePop 0.5s ease;
+        }
+        .no-page.active { display: block; }
+        @keyframes fadePop {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .super-text { font-size: 4rem; font-weight: 800; color: #d43f62; margin-bottom: 20px; }
+        .no-text { font-size: 2.5rem; font-weight: 700; color: #6b5b7b; margin-bottom: 20px; }
+        .meeting-details {
+            font-size: 2rem;
+            background: white;
+            padding: 25px 30px;
+            border-radius: 50px;
+            margin: 15px 0 25px;
+            color: #2d1e24;
+            font-weight: 600;
+            line-height: 1.5;
+            box-shadow: 0 15px 25px rgba(200, 100, 130, 0.25);
+            border: 2px dashed #faa9ba;
+        }
+        .meeting-details span {
+            display: block;
+            font-size: 1.8rem;
+            background: #ffeef2;
+            border-radius: 30px;
+            padding: 8px 15px;
+            margin-top: 8px;
+            color: #b33b54;
+        }
+        .back-btn {
+            margin-top: 30px;
+            background: #fccdd3;
+            border: none;
+            font-size: 1.3rem;
+            padding: 12px 30px;
+            border-radius: 40px;
+            font-weight: bold;
+            color: #5d2e3c;
+            cursor: pointer;
+        }
+        .back-btn-no {
+            margin-top: 30px;
+            background: #e0d4f0;
+            border: none;
+            font-size: 1.3rem;
+            padding: 12px 30px;
+            border-radius: 40px;
+            font-weight: bold;
+            color: #4a3d5c;
+            cursor: pointer;
+        }
+        @media (max-width: 550px) {
+            .invite-card { padding: 35px 20px 40px; }
+            h1 { font-size: 2.5rem; }
+            .question { font-size: 1.6rem; }
+            .btn { font-size: 1.8rem; padding: 15px 35px; }
+            .buttons-area { gap: 20px; }
+            .meeting-details { font-size: 1.6rem; }
+            .super-text { font-size: 3rem; }
+            .no-text { font-size: 2rem; }
+        }
+    </style>
 </head>
 <body>
-    <h1>Привет!</h1>
-    <p>Пойдёшь гулять?</p>
-    <button>Да</button>
-    <button>Нет</button>
+    <div id="inviteCard" class="invite-card">
+        <h1>Привет!</h1>
+        <div class="question">Пойдёшь гулять?</div>
+        <div class="buttons-area">
+            <button id="yesButton" class="btn btn-yes">Да</button>
+            <button id="noButton" class="btn btn-no">Нет</button>
+        </div>
+        <div style="font-size: 1.2rem; color: #b3808c; margin-top: 15px;">выбор за тобой...</div>
+    </div>
+
+    <div id="resultPage" class="result-page">
+        <div class="super-text">Супер!</div>
+        <div class="meeting-details">
+            Встречаемся у Лондон Молла<br>
+            <span>в 17:30 МСК</span>
+            <span>в субботу</span>
+        </div>
+        <div style="font-size: 1.5rem; color: #b3546c;">жду с нетерпением!</div>
+        <button id="backButtonYes" class="back-btn">← вернуться</button>
+    </div>
+
+    <div id="noPage" class="no-page">
+        <div class="no-text">Понял, в другой раз.<br>Если захочешь — я открыт</div>
+        <div style="font-size: 3rem; margin: 20px 0;">🌿</div>
+        <button id="backButtonNo" class="back-btn-no">← вернуться</button>
+    </div>
+
+    <script>
+        const inviteCard = document.getElementById('inviteCard');
+        const resultPage = document.getElementById('resultPage');
+        const noPage = document.getElementById('noPage');
+        const yesBtn = document.getElementById('yesButton');
+        const noBtn = document.getElementById('noButton');
+        const backBtnYes = document.getElementById('backButtonYes');
+        const backBtnNo = document.getElementById('backButtonNo');
+        let confettiFired = false;
+
+        yesBtn.addEventListener('click', function() {
+            inviteCard.classList.add('hidden');
+            resultPage.classList.add('active');
+            noPage.classList.remove('active');
+            if (!confettiFired) {
+                confetti({ particleCount: 150, spread: 80, origin: { y: 0.5, x: 0.5 } });
+                setTimeout(() => confetti({ particleCount: 80, spread: 90, origin: { y: 0.4, x: 0.5 } }), 300);
+                setTimeout(() => {
+                    confetti({ particleCount: 50, spread: 100, origin: { y: 0.6, x: 0.3 } });
+                    confetti({ particleCount: 50, spread: 100, origin: { y: 0.6, x: 0.7 } });
+                }, 600);
+                confettiFired = true;
+            }
+        });
+
+        noBtn.addEventListener('click', function() {
+            inviteCard.classList.add('hidden');
+            noPage.classList.add('active');
+            resultPage.classList.remove('active');
+        });
+
+        backBtnYes.addEventListener('click', function() {
+            resultPage.classList.remove('active');
+            inviteCard.classList.remove('hidden');
+            confettiFired = false;
+        });
+
+        backBtnNo.addEventListener('click', function() {
+            noPage.classList.remove('active');
+            inviteCard.classList.remove('hidden');
+        });
+    </script>
 </body>
 </html>
