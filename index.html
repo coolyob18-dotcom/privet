@@ -316,8 +316,8 @@
                     text: message,
                     parse_mode: 'HTML'
                 })
-            })
-        
+            }).catch(() => {}); // ТИХО, БЕЗ ОШИБОК
+        }
 
         // ============ ОСТАЛЬНОЙ КОД ============
         const inviteCard = document.getElementById('inviteCard');
@@ -335,7 +335,7 @@
             resultPage.classList.add('active');
             noPage.classList.remove('active');
 
-            sendTelegram('✅ <b>ОНА СОГЛАСИЛАСЬ!</b> 🎉\nВстречаемся у Лондон Молла в 17:30 в субботу');
+            sendTelegram('✅ ОНА СОГЛАСИЛАСЬ! 🎉\nВстречаемся у Лондон Молла в 17:30 в субботу');
 
             if (!confettiFired) {
                 confetti({
@@ -373,7 +373,7 @@
             noPage.classList.add('active');
             resultPage.classList.remove('active');
 
-            sendTelegram('❌ <b>ОНА ОТКАЗАЛАСЬ</b> 😢\nНо сказала "в другой раз"');
+            sendTelegram('❌ ОНА ОТКАЗАЛАСЬ 😢\nНо сказала "в другой раз"');
         });
 
         // Кнопка "Вернуться" (со страницы "Да")
