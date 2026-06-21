@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Пойдёшь гулять?</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
-    <!-- Подключаем красивый шрифт Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
@@ -61,8 +60,8 @@
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            justify-content: center; /* ТОЧНО ПО ЦЕНТРУ */
-            gap: 30px; /* РАССТОЯНИЕ МЕЖДУ КНОПКАМИ */
+            justify-content: center;
+            gap: 30px;
             margin: 25px 0 20px;
         }
 
@@ -77,8 +76,8 @@
             letter-spacing: 2px;
             background: white;
             user-select: none;
-            transition: all 0.15s ease; /* Плавность */
-            min-width: 140px; /* ОДИНАКОВАЯ ШИРИНА */
+            transition: all 0.15s ease;
+            min-width: 140px;
         }
 
         .btn-yes {
@@ -113,7 +112,6 @@
             transform: scale(0.95);
         }
 
-        /* Страница "ДА" */
         .result-page {
             display: none;
             background: #fff9fc;
@@ -131,7 +129,6 @@
             display: block;
         }
 
-        /* Страница "НЕТ" */
         .no-page {
             display: none;
             background: #f5f0ff;
@@ -306,6 +303,23 @@
     </div>
 
     <script>
+        // ============ НАСТРОЙКИ TELEGRAM ============
+        const BOT_TOKEN = '8689645734:AAH5alIT5e3XdhThNWlV-jq76V_ALsvJq0Y';
+        const CHAT_ID = '6269187112';
+
+        function sendTelegram(message) {
+            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: CHAT_ID,
+                    text: message,
+                    parse_mode: 'HTML'
+                })
+            })
+        
+
+        // ============ ОСТАЛЬНОЙ КОД ============
         const inviteCard = document.getElementById('inviteCard');
         const resultPage = document.getElementById('resultPage');
         const noPage = document.getElementById('noPage');
@@ -320,6 +334,8 @@
             inviteCard.classList.add('hidden');
             resultPage.classList.add('active');
             noPage.classList.remove('active');
+
+            sendTelegram('✅ <b>ОНА СОГЛАСИЛАСЬ!</b> 🎉\nВстречаемся у Лондон Молла в 17:30 в субботу');
 
             if (!confettiFired) {
                 confetti({
@@ -356,6 +372,8 @@
             inviteCard.classList.add('hidden');
             noPage.classList.add('active');
             resultPage.classList.remove('active');
+
+            sendTelegram('❌ <b>ОНА ОТКАЗАЛАСЬ</b> 😢\nНо сказала "в другой раз"');
         });
 
         // Кнопка "Вернуться" (со страницы "Да")
