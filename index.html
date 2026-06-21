@@ -19,7 +19,9 @@
             box-shadow:0 20px 40px rgba(200,100,130,0.2)
         }
         .hidden{display:none!important}
-        h1{font-size:2.3rem;color:#c44b6c;margin-bottom:20px}
+        h1{
+            font-size:2.3rem;color:#c44b6c;margin-bottom:20px
+        }
         .question{
             font-size:1.7rem;color:#4a2c3a;background:#ffeef4;
             display:inline-block;padding:12px 30px;border-radius:100px;margin:20px 0 35px
@@ -42,6 +44,7 @@
             font-size:1.3rem;background:#fff;padding:20px;border-radius:25px;
             margin:20px 0;border:2px dashed #faa9ba;line-height:1.8
         }
+        .wait-text{color:#b3546c;font-size:1.2rem}
         .back-btn{margin-top:20px;border:none;font-size:1.1rem;padding:12px 25px;border-radius:40px;font-weight:700;cursor:pointer}
         .back-yes{background:#fccdd3;color:#5d2e3c}
         .back-no{background:#e0d4f0;color:#4a3d5c}
@@ -60,7 +63,7 @@
 <div id="yes" class="card hidden">
     <div class="result-text result-yes">Супер!</div>
     <div class="meeting-info">Встречаемся у Лондон Молла<br>в 17:30 МСК<br>в субботу</div>
-    <p style="color:#b3546c">жду тебя!</p>
+    <p class="wait-text">жду тебя</p>
     <button class="back-btn back-yes" onclick="back()">← вернуться</button>
 </div>
 <div id="no" class="card hidden">
