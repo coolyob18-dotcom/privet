@@ -2,158 +2,97 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Пойдёшь гулять?</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Приглашение</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body {
-            background: linear-gradient(160deg, #ffe6f0, #ffe0ec);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: -apple-system, 'Segoe UI', sans-serif;
-            padding: 20px;
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{
+            background:linear-gradient(160deg,#ffe6f0,#ffe0ec);
+            min-height:100vh;display:flex;align-items:center;justify-content:center;
+            font-family:-apple-system,sans-serif;padding:20px
         }
-        .card {
-            background: #fff9fc;
-            border-radius: 30px;
-            padding: 40px 25px;
-            max-width: 380px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 20px 40px rgba(200,100,130,0.2);
+        .card{
+            background:#fff9fc;border-radius:30px;padding:40px 25px;
+            max-width:380px;width:100%;text-align:center;
+            box-shadow:0 20px 40px rgba(200,100,130,0.2)
         }
-        .hidden { display: none !important; }
-        h1 { font-size: 2.3rem; color: #c44b6c; margin-bottom: 20px; }
-        .question {
-            font-size: 1.7rem; color: #4a2c3a; background: #ffeef4;
-            display: inline-block; padding: 12px 30px; border-radius: 100px;
-            margin: 20px 0 35px;
+        .hidden{display:none!important}
+        h1{font-size:2.3rem;color:#c44b6c;margin-bottom:20px}
+        .question{
+            font-size:1.7rem;color:#4a2c3a;background:#ffeef4;
+            display:inline-block;padding:12px 30px;border-radius:100px;margin:20px 0 35px
         }
-        .buttons { display: flex; gap: 25px; justify-content: center; flex-wrap: wrap; }
-        .btn {
-            border: none; font-weight: 700; font-size: 1.7rem; padding: 16px 38px;
-            border-radius: 100px; cursor: pointer; user-select: none;
-            -webkit-tap-highlight-color: transparent;
+        .buttons{display:flex;gap:25px;justify-content:center;flex-wrap:wrap}
+        .btn{
+            border:none;font-weight:700;font-size:1.7rem;padding:16px 38px;
+            border-radius:100px;cursor:pointer;user-select:none
         }
-        .btn:active { transform: scale(0.95); }
-        .btn-yes { background: #ffb6c1; color: #4d1f2f; border: 3px solid #ff8da1; }
-        .btn-no { background: #f0e1e8; color: #5a3e4b; border: 3px solid #d6b7c2; }
-        .result-text { font-size: 2rem; font-weight: 700; margin: 20px 0; }
-        .result-yes { color: #d43f62; }
-        .result-no { color: #6b5b7b; }
-        .meeting-info {
-            font-size: 1.3rem; background: #fff; padding: 20px; border-radius: 25px;
-            margin: 20px 0; border: 2px dashed #faa9ba; line-height: 1.8;
+        .btn:active{transform:scale(0.95)}
+        .btn-yes{background:#ffb6c1;color:#4d1f2f;border:3px solid #ff8da1}
+        .btn-no{background:#f0e1e8;color:#5a3e4b;border:3px solid #d6b7c2}
+        .result-text{font-size:2rem;font-weight:700;margin:20px 0}
+        .result-yes{color:#d43f62}
+        .result-no{color:#6b5b7b}
+        .meeting-info{
+            font-size:1.3rem;background:#fff;padding:20px;border-radius:25px;
+            margin:20px 0;border:2px dashed #faa9ba;line-height:1.8
         }
-        .back-btn {
-            margin-top: 20px; border: none; font-size: 1.1rem; padding: 12px 25px;
-            border-radius: 40px; font-weight: bold; cursor: pointer;
-        }
-        .back-yes { background: #fccdd3; color: #5d2e3c; }
-        .back-no { background: #e0d4f0; color: #4a3d5c; }
-        #status { font-size: 0.75rem; color: #aaa; margin-top: 15px; }
+        .back-btn{margin-top:20px;border:none;font-size:1.1rem;padding:12px 25px;border-radius:40px;font-weight:700;cursor:pointer}
+        .back-yes{background:#fccdd3;color:#5d2e3c}
+        .back-no{background:#e0d4f0;color:#4a3d5c}
     </style>
 </head>
 <body>
-
-    <!-- Главная -->
-    <div id="mainCard" class="card">
-        <h1>Привет!</h1>
-        <div class="question">Пойдёшь гулять?</div>
-        <div class="buttons">
-            <button class="btn btn-yes" onclick="answer('yes')">Да</button>
-            <button class="btn btn-no" onclick="answer('no')">Нет</button>
-        </div>
-        <div id="status"></div>
+<div id="main" class="card">
+    <h1>Привет!</h1>
+    <div class="question">Пойдёшь гулять?</div>
+    <div class="buttons">
+        <button class="btn btn-yes" onclick="ans('yes')">Да</button>
+        <button class="btn btn-no" onclick="ans('no')">Нет</button>
     </div>
-
-    <!-- ДА -->
-    <div id="yesCard" class="card hidden">
-        <div class="result-text result-yes">Супер!</div>
-        <div class="meeting-info">
-            Встречаемся у Лондон Молла<br>
-            в 17:30 МСК<br>
-            в субботу
-        </div>
-        <p style="color:#b3546c;">жду с нетерпением!</p>
-        <button class="back-btn back-yes" onclick="goBack()">← вернуться</button>
-    </div>
-
-    <!-- НЕТ -->
-    <div id="noCard" class="card hidden">
-        <div class="result-text result-no">
-            Понял, в другой раз.<br>Если захочешь — я открыт
-        </div>
-        <button class="back-btn back-no" onclick="goBack()">← вернуться</button>
-    </div>
-
-    <script>
-        const tg = window.Telegram?.WebApp;
-        const BOT_TOKEN = '8689645734:AAH5alIT5e3XdhThNWlV-jq76V_ALsvJq0Y';
-        const MY_CHAT_ID = '6269187112';
-        const status = document.getElementById('status');
-
-        function log(msg) { status.textContent = msg; console.log(msg); }
-
-        // Инициализация
-        if (tg) {
-            tg.ready();
-            tg.expand();
-            log('Готово');
-        } else {
-            log('Открыто в браузере');
-        }
-
-        function answer(choice) {
-            document.getElementById('mainCard').classList.add('hidden');
-
-            // Информация о пользователе
-            let userInfo = 'Кто-то';
-            if (tg?.initDataUnsafe?.user) {
-                const u = tg.initDataUnsafe.user;
-                userInfo = [u.first_name, u.last_name].filter(Boolean).join(' ') || 'Кто-то';
-                if (u.username) userInfo += ` (@${u.username})`;
-            }
-
-            let text = '';
-            if (choice === 'yes') {
-                document.getElementById('yesCard').classList.remove('hidden');
-                confetti?.({ particleCount: 150, spread: 80, origin: { y: 0.5, x: 0.5 } });
-                text = `🎉 <b>${userInfo}</b> ответил(а): ДА! Идёт гулять!`;
-            } else {
-                document.getElementById('noCard').classList.remove('hidden');
-                text = `😔 <b>${userInfo}</b> ответил(а): Нет, в другой раз...`;
-            }
-
-            log('Отправка...');
-
-            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: MY_CHAT_ID, text, parse_mode: 'HTML' })
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (data.ok) {
-                    log('Отправлено!');
-                    setTimeout(() => tg?.close(), 2500);
-                } else {
-                    log('Ошибка: ' + data.description);
-                }
-            })
-            .catch(err => log('Ошибка сети: ' + err.message));
-        }
-
-        function goBack() {
-            document.getElementById('mainCard').classList.remove('hidden');
-            document.getElementById('yesCard').classList.add('hidden');
-            document.getElementById('noCard').classList.add('hidden');
-            log('');
-        }
-    </script>
+</div>
+<div id="yes" class="card hidden">
+    <div class="result-text result-yes">Супер!</div>
+    <div class="meeting-info">Встречаемся у Лондон Молла<br>в 17:30 МСК<br>в субботу</div>
+    <p style="color:#b3546c">жду с нетерпением!</p>
+    <button class="back-btn back-yes" onclick="back()">← вернуться</button>
+</div>
+<div id="no" class="card hidden">
+    <div class="result-text result-no">Понял, в другой раз.<br>Если захочешь — я открыт</div>
+    <button class="back-btn back-no" onclick="back()">← вернуться</button>
+</div>
+<script>
+const tg=window.Telegram?.WebApp;
+if(tg){tg.ready();tg.expand()}
+function ans(c){
+    document.getElementById('main').classList.add('hidden');
+    let t='',u='Кто-то';
+    if(tg?.initDataUnsafe?.user){
+        const d=tg.initDataUnsafe.user;
+        u=[d.first_name,d.last_name].filter(Boolean).join(' ')||'Кто-то';
+        if(d.username)u+=' (@'+d.username+')'
+    }
+    if(c==='yes'){
+        document.getElementById('yes').classList.remove('hidden');
+        if(confetti)confetti({particleCount:150,spread:80,origin:{y:0.5,x:0.5}});
+        t='🎉 <b>'+u+'</b> ответил(а): ДА!'
+    }else{
+        document.getElementById('no').classList.remove('hidden');
+        t='😔 <b>'+u+'</b> ответил(а): Нет...'
+    }
+    fetch('https://api.telegram.org/bot8689645734:AAH5alIT5e3XdhThNWlV-jq76V_ALsvJq0Y/sendMessage',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({chat_id:'6269187112',text:t,parse_mode:'HTML'})
+    }).then(r=>r.json()).then(d=>{if(d.ok)setTimeout(()=>tg?.close(),2500)})
+}
+function back(){
+    document.getElementById('main').classList.remove('hidden');
+    document.getElementById('yes').classList.add('hidden');
+    document.getElementById('no').classList.add('hidden')
+}
+</script>
 </body>
 </html>
