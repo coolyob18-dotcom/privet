@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ïîéä¸øü ãóëÿòü?</title>
+    <title>Пойдёшь гулять?</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
     <style>
         * {
@@ -99,7 +99,6 @@
             transform: scale(0.95);
         }
 
-        /* Ñòðàíèöà "ÄÀ" */
         .result-page {
             display: none;
             background: #fff9fc;
@@ -117,7 +116,6 @@
             display: block;
         }
 
-        /* Ñòðàíèöà "ÍÅÒ" */
         .no-page {
             display: none;
             background: #f5f0ff;
@@ -241,34 +239,31 @@
 </head>
 <body>
 
-    <!-- Îñíîâíàÿ êàðòî÷êà -->
     <div id="inviteCard" class="invite-card">
-        <h1>Ïðèâåò!</h1>
-        <div class="question">Ïîéä¸øü ãóëÿòü?</div>
+        <h1>Привет!</h1>
+        <div class="question">Пойдёшь гулять?</div>
         <div class="buttons-area">
-            <button id="yesButton" class="btn btn-yes">Äà</button>
-            <button id="noButton" class="btn btn-no">Íåò</button>
+            <button id="yesButton" class="btn btn-yes">Да</button>
+            <button id="noButton" class="btn btn-no">Нет</button>
         </div>
-        <div style="font-size: 1.2rem; color: #b3808c; margin-top: 15px;">âûáîð çà òîáîé...</div>
+        <div style="font-size: 1.2rem; color: #b3808c; margin-top: 15px;">выбор за тобой...</div>
     </div>
 
-    <!-- Ñòðàíèöà "ÄÀ" -->
     <div id="resultPage" class="result-page">
-        <div class="super-text">Ñóïåð!</div>
+        <div class="super-text">Супер!</div>
         <div class="meeting-details">
-            Âñòðå÷àåìñÿ ó Ëîíäîí Ìîëëà<br>
-            <span>â 17:30 ÌÑÊ</span>
-            <span>â ñóááîòó</span>
+            Встречаемся у Лондон Молла<br>
+            <span>в 17:30 МСК</span>
+            <span>в субботу</span>
         </div>
-        <div style="font-size: 1.5rem; color: #b3546c;">æäó ñ íåòåðïåíèåì!</div>
-        <button id="backButtonYes" class="back-btn">< âåðíóòüñÿ</button>
+        <div style="font-size: 1.5rem; color: #b3546c;">жду с нетерпением!</div>
+        <button id="backButtonYes" class="back-btn">← вернуться</button>
     </div>
 
-    <!-- Ñòðàíèöà "ÍÅÒ" -->
     <div id="noPage" class="no-page">
-        <div class="no-text">Ïîíÿë, â äðóãîé ðàç.<br>Åñëè çàõî÷åøü — ÿ îòêðûò</div>
-        <div style="font-size: 3rem; margin: 20px 0;">??</div>
-        <button id="backButtonNo" class="back-btn-no">< âåðíóòüñÿ</button>
+        <div class="no-text">Понял, в другой раз.<br>Если захочешь — я открыт</div>
+        <div style="font-size: 3rem; margin: 20px 0;">🌿</div>
+        <button id="backButtonNo" class="back-btn-no">← вернуться</button>
     </div>
 
     <script>
@@ -281,7 +276,6 @@
         const backBtnNo = document.getElementById('backButtonNo');
         let confettiFired = false;
 
-        // Êíîïêà "Äà"
         yesBtn.addEventListener('click', function() {
             inviteCard.classList.add('hidden');
             resultPage.classList.add('active');
@@ -317,21 +311,18 @@
             }
         });
 
-        // Êíîïêà "Íåò"
         noBtn.addEventListener('click', function() {
             inviteCard.classList.add('hidden');
             noPage.classList.add('active');
             resultPage.classList.remove('active');
         });
 
-        // Êíîïêà "Âåðíóòüñÿ" (ñî ñòðàíèöû "Äà")
         backBtnYes.addEventListener('click', function() {
             resultPage.classList.remove('active');
             inviteCard.classList.remove('hidden');
             confettiFired = false;
         });
 
-        // Êíîïêà "Âåðíóòüñÿ" (ñî ñòðàíèöû "Íåò")
         backBtnNo.addEventListener('click', function() {
             noPage.classList.remove('active');
             inviteCard.classList.remove('hidden');
