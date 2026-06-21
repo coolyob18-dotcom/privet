@@ -5,13 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Пойдёшь гулять?</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
+    <!-- Подключаем красивый шрифт Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        text working-tree-encoding=cp1251
 
         body {
             background: linear-gradient(145deg, #ffe6f0 0%, #ffe0ec 100%);
@@ -19,7 +20,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Segoe UI', 'Arial', sans-serif;
+            font-family: 'Montserrat', 'Segoe UI', 'Arial', sans-serif;
             padding: 20px;
         }
 
@@ -40,7 +41,7 @@
 
         h1 {
             font-size: 3rem;
-            font-weight: 700;
+            font-weight: 800;
             color: #c44b6c;
             margin-bottom: 15px;
         }
@@ -49,7 +50,7 @@
             font-size: 2rem;
             color: #4a2c3a;
             margin: 20px 0 35px;
-            font-weight: 500;
+            font-weight: 600;
             background: #ffeef4;
             display: inline-block;
             padding: 12px 35px;
@@ -60,8 +61,8 @@
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            justify-content: center;
-            gap: 35px;
+            justify-content: center; /* ТОЧНО ПО ЦЕНТРУ */
+            gap: 30px; /* РАССТОЯНИЕ МЕЖДУ КНОПКАМИ */
             margin: 25px 0 20px;
         }
 
@@ -76,6 +77,8 @@
             letter-spacing: 2px;
             background: white;
             user-select: none;
+            transition: all 0.15s ease; /* Плавность */
+            min-width: 140px; /* ОДИНАКОВАЯ ШИРИНА */
         }
 
         .btn-yes {
@@ -84,8 +87,13 @@
             border: 3px solid #ff8da1;
         }
 
-        .btn-yes:active {
+        .btn-yes:hover {
             background: #ff99b0;
+            transform: scale(1.03);
+        }
+
+        .btn-yes:active {
+            background: #ff8aa3;
             transform: scale(0.95);
         }
 
@@ -95,8 +103,13 @@
             border: 3px solid #d6b7c2;
         }
 
-        .btn-no:active {
+        .btn-no:hover {
             background: #e5d0d9;
+            transform: scale(1.03);
+        }
+
+        .btn-no:active {
+            background: #dcc2cd;
             transform: scale(0.95);
         }
 
@@ -196,6 +209,12 @@
             color: #5d2e3c;
             cursor: pointer;
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            transition: 0.15s;
+        }
+
+        .back-btn:hover {
+            background: #fbbbc4;
+            transform: scale(1.02);
         }
 
         .back-btn-no {
@@ -209,6 +228,19 @@
             color: #4a3d5c;
             cursor: pointer;
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            transition: 0.15s;
+        }
+
+        .back-btn-no:hover {
+            background: #d5c6ea;
+            transform: scale(1.02);
+        }
+
+        .footer-text {
+            font-size: 1.2rem;
+            color: #b3808c;
+            margin-top: 15px;
+            font-weight: 500;
         }
 
         @media (max-width: 550px) {
@@ -224,6 +256,7 @@
             .btn {
                 font-size: 1.8rem;
                 padding: 15px 35px;
+                min-width: 110px;
             }
             .buttons-area {
                 gap: 20px;
@@ -250,7 +283,7 @@
             <button id="yesButton" class="btn btn-yes">Да</button>
             <button id="noButton" class="btn btn-no">Нет</button>
         </div>
-        <div style="font-size: 1.2rem; color: #b3808c; margin-top: 15px;">выбор за тобой...</div>
+        <div class="footer-text">выбор за тобой...</div>
     </div>
 
     <!-- Страница "ДА" -->
@@ -261,7 +294,7 @@
             <span>в 17:30 МСК</span>
             <span>в субботу</span>
         </div>
-        <div style="font-size: 1.5rem; color: #b3546c;">жду с нетерпением!</div>
+        <div style="font-size: 1.5rem; color: #b3546c; font-weight: 600;">жду с нетерпением!</div>
         <button id="backButtonYes" class="back-btn">← вернуться</button>
     </div>
 
