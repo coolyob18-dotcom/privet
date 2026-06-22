@@ -22,6 +22,7 @@
         h1{
             font-size:2.3rem;color:#c44b6c;margin-bottom:20px
         }
+        h2{font-size:1.5rem;color:#c44b6c;margin-bottom:20px}
         .question{
             font-size:1.7rem;color:#4a2c3a;background:#ffeef4;
             display:inline-block;padding:12px 30px;border-radius:100px;margin:20px 0 35px
@@ -37,6 +38,7 @@
         .btn:active{transform:scale(0.95)}
         .btn-yes{background:#ffb6c1;color:#4d1f2f;border:3px solid #ff8da1}
         .btn-no{background:#f0e1e8;color:#5a3e4b;border:3px solid #d6b7c2}
+        .btn-submit{background:#c44b6c;color:#fff;border:3px solid #a33d58;margin-top:15px;font-size:1.3rem;padding:14px 35px}
         .result-text{font-size:2rem;font-weight:700;margin:20px 0}
         .result-yes{color:#d43f62}
         .result-no{color:#6b5b7b}
@@ -48,10 +50,27 @@
         .back-btn{margin-top:20px;border:none;font-size:1.1rem;padding:12px 25px;border-radius:40px;font-weight:700;cursor:pointer}
         .back-yes{background:#fccdd3;color:#5d2e3c}
         .back-no{background:#e0d4f0;color:#4a3d5c}
+        .password-input{
+            width:100%;padding:15px 20px;border:2px solid #faa9ba;border-radius:50px;
+            font-size:1.2rem;text-align:center;outline:none;margin:15px 0;
+            font-family:-apple-system,sans-serif
+        }
+        .password-input:focus{border-color:#c44b6c}
+        .error-text{color:#d43f62;font-size:0.9rem;margin-top:5px}
     </style>
 </head>
 <body>
-<div id="main" class="card">
+
+<!-- Страница пароля -->
+<div id="loginCard" class="card">
+    <h2>🔒 Введи пароль</h2>
+    <input type="password" id="passwordInput" class="password-input" placeholder="••••••" maxlength="20">
+    <button class="btn btn-submit" onclick="checkPassword()">Войти</button>
+    <p id="loginError" class="error-text"></p>
+</div>
+
+<!-- Главная -->
+<div id="main" class="card hidden">
     <h1>Привет!</h1>
     <div class="question">Пойдёшь гулять?</div>
     <div class="buttons">
@@ -60,45 +79,85 @@
     </div>
     <div class="hint">выбор за тобой...</div>
 </div>
+
+<!-- Да -->
 <div id="yes" class="card hidden">
     <div class="result-text result-yes">Супер!</div>
-    <div class="meeting-info">Встречаемся у м. Ломоносовская<br>в 17:30 <br>в субботу</div>
+    <div class="meeting-info">Встречаемся у м. Ломоносовская<br>в 17:30<br>в субботу</div>
     <p class="wait-text">жду тебя!</p>
     <button class="back-btn back-yes" onclick="back()">← вернуться</button>
 </div>
+
+<!-- Нет -->
 <div id="no" class="card hidden">
     <div class="result-text result-no">Понял, в другой раз.<br>Если захочешь — я открыт</div>
     <button class="back-btn back-no" onclick="back()">← вернуться</button>
 </div>
+
 <script>
 const tg=window.Telegram?.WebApp;
 if(tg){tg.ready();tg.expand()}
+
+// ====== ПОМЕНЯЙ ПАРОЛЬ ТУТ ======
+const PASSWORD='1122';
+// =================================
+
+const BOT_TOKEN='8689645734:AAH5alIT5e3XdhThNWlV-jq76V_ALsvJq0Y';
+const CHAT_ID='6269187112';
+let currentUser='Кто-то';
+
+if(tg?.initDataUnsafe?.user){
+    const u=tg.initDataUnsafe.user;
+    currentUser=[u.first_name,u.last_name].filter(Boolean).join(' ')||'Кто-то';
+    if(u.username)currentUser+=' (@'+u.username+')';
+}
+
+// Ввод пароля по Enter
+document.getElementById('passwordInput').addEventListener('keydown',function(e){
+    if(e.key==='Enter')checkPassword();
+});
+
+function checkPassword(){
+    const input=document.getElementById('passwordInput').value;
+    if(input===PASSWORD){
+        document.getElementById('loginError').textContent='';
+        document.getElementById('loginCard').classList.add('hidden');
+        document.getElementById('main').classList.remove('hidden');
+    }else{
+        document.getElementById('loginError').textContent='❌ Неверный пароль';
+        document.getElementById('passwordInput').value='';
+    }
+}
+
+function sendToTelegram(text){
+    const url='https://api.telegram.org/bot'+BOT_TOKEN+'/sendMessage?chat_id='+CHAT_ID+'&text='+encodeURIComponent(text)+'&parse_mode=HTML';
+    const old=document.getElementById('tgframe');
+    if(old)old.remove();
+    const iframe=document.createElement('iframe');
+    iframe.id='tgframe';
+    iframe.style.display='none';
+    iframe.src=url;
+    document.body.appendChild(iframe);
+}
+
 function ans(c){
     document.getElementById('main').classList.add('hidden');
-    let t='',u='Кто-то';
-    if(tg?.initDataUnsafe?.user){
-        const d=tg.initDataUnsafe.user;
-        u=[d.first_name,d.last_name].filter(Boolean).join(' ')||'Кто-то';
-        if(d.username)u+=' (@'+d.username+')'
-    }
+    let t='';
     if(c==='yes'){
         document.getElementById('yes').classList.remove('hidden');
         if(confetti)confetti({particleCount:150,spread:80,origin:{y:0.5,x:0.5}});
-        t='🎉 <b>'+u+'</b> ответил(а): ДА!'
+        t='🎉 <b>'+currentUser+'</b> ответил(а): ДА!';
     }else{
         document.getElementById('no').classList.remove('hidden');
-        t='😔 <b>'+u+'</b> ответил(а): Нет...'
+        t='😔 <b>'+currentUser+'</b> ответил(а): Нет...';
     }
-    fetch('https://api.telegram.org/bot8689645734:AAH5alIT5e3XdhThNWlV-jq76V_ALsvJq0Y/sendMessage',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({chat_id:'6269187112',text:t,parse_mode:'HTML'})
-    }).then(r=>r.json()).then(d=>{if(d.ok)setTimeout(()=>tg?.close(),2500)})
+    sendToTelegram(t);
 }
+
 function back(){
     document.getElementById('main').classList.remove('hidden');
     document.getElementById('yes').classList.add('hidden');
-    document.getElementById('no').classList.add('hidden')
+    document.getElementById('no').classList.add('hidden');
 }
 </script>
 </body>
