@@ -127,6 +127,7 @@ if(savedChoice) {
 
 // Функция блокировки ПРОТИВОПОЛОЖНОЙ кнопки
 function applyVisualLock(choice) {
+    // Если выбрали "yes", блокируем кнопку "no", и наоборот
     const targetBlockBtn = document.getElementById(choice === 'yes' ? 'btn-no' : 'btn-yes');
     targetBlockBtn.classList.add('blocked-btn');
     document.getElementById('hint-text').innerText = 'Выбор сделан';
@@ -145,20 +146,29 @@ function triggerFloatingText(buttonId) {
 
 // Главная логика кликов по кнопкам
 function processClick(currentClick) {
+    // ЕСЛИ ВЫБОР УЖЕ БЫЛ СДЕЛАН РАНЕЕ:
     if (savedChoice !== null) {
+        // Если кликает на заблокированную (противоположную) кнопку:
         if (currentClick !== savedChoice) {
             triggerFloatingText(currentClick === 'yes' ? 'btn-yes' : 'btn-no');
         } else {
+            // Если кликает на свою разрешенную кнопку — просто пускаем на экран
             showScreen(currentClick);
         }
         return; 
     }
 
+    // ЕСЛИ ЭТО ПЕРВЫЙ КЛИК:
     savedChoice = currentClick;
     localStorage.setItem('user_first_choice', currentClick);
     
+    // Блокируем ПРОТИВОПОЛОЖНУЮ кнопку
     applyVisualLock(currentClick);
+    
+    // Мгновенно переключаем экран
     showScreen(currentClick);
+    
+    // Отправляем уведомление в Телеграм
     sendTelegramNotification(currentClick);
 }
 
@@ -173,7 +183,7 @@ function showScreen(choice) {
     }
 }
 
-// Функция отправки сообщений боту через прокси-сервер (РАБОТАЕТ БЕЗ VPN)
+// Функция отправки сообщений боту
 function sendTelegramNotification(choice) {
     let t='', u='Кто-то';
     if(tg?.initDataUnsafe?.user){
@@ -188,8 +198,7 @@ function sendTelegramNotification(choice) {
         t='😔 <b>'+u+'</b> ответил(а): Нет...';
     }
     
-    // api.telegram.org заменен на api.telegram-proxy.org для работы без VPN в РФ
-    fetch('https://telegram-proxy.org',{
+    fetch('https://telegram.org',{
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({chat_id:'6269187112',text:t,parse_mode:'HTML'})
