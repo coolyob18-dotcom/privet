@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Приглашение</title>
-    <script src="https://telegram.org"></script>
-    <script src="https://jsdelivr.net"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         body{
@@ -30,56 +30,13 @@
             font-size:1rem;color:#b3808c;margin-top:15px;font-style:italic
         }
         .buttons{display:flex;gap:25px;justify-content:center;flex-wrap:wrap}
-        
         .btn{
             border:none;font-weight:700;font-size:1.7rem;padding:16px 38px;
-            border-radius:100px;cursor:pointer;user-select:none;
-            position:relative;transition:all 0.2s ease
+            border-radius:100px;cursor:pointer;user-select:none
         }
         .btn:active{transform:scale(0.95)}
-        
         .btn-yes{background:#ffb6c1;color:#4d1f2f;border:3px solid #ff8da1}
         .btn-no{background:#f0e1e8;color:#5a3e4b;border:3px solid #d6b7c2}
-        
-        /* Стиль для заблокированной кнопки */
-        .btn.blocked-btn {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* Анимация всплывающего текста а-ля ВК */
-        .floating-badge {
-            position: absolute;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.9rem;
-            color: #ffffff;
-            background: rgba(196, 75, 108, 0.95);
-            padding: 6px 14px;
-            border-radius: 20px;
-            white-space: nowrap;
-            pointer-events: none;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            animation: floatUpFade 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-            z-index: 10;
-        }
-
-        @keyframes floatUpFade {
-            0% {
-                opacity: 0;
-                transform: translate(-50%, 15px) scale(0.8);
-            }
-            15% {
-                opacity: 1;
-                transform: translate(-50%, -5px) scale(1);
-            }
-            100% {
-                opacity: 0;
-                transform: translate(-50%, -60px) scale(0.85);
-            }
-        }
-
         .result-text{font-size:2rem;font-weight:700;margin:20px 0}
         .result-yes{color:#d43f62}
         .result-no{color:#6b5b7b}
@@ -98,10 +55,10 @@
     <h1>Привет!</h1>
     <div class="question">Пойдёшь гулять?</div>
     <div class="buttons">
-        <button id="btn-yes" class="btn btn-yes" onclick="processClick('yes')">Да</button>
-        <button id="btn-no" class="btn btn-no" onclick="processClick('no')">Нет</button>
+        <button class="btn btn-yes" onclick="ans('yes')">Да</button>
+        <button class="btn btn-no" onclick="ans('no')">Нет</button>
     </div>
-    <div class="hint" id="hint-text">выбор за тобой...</div>
+    <div class="hint">выбор за тобой...</div>
 </div>
 <div id="yes" class="card hidden">
     <div class="result-text result-yes">Супер!</div>
@@ -116,99 +73,32 @@
 <script>
 const tg=window.Telegram?.WebApp;
 if(tg){tg.ready();tg.expand()}
-
-// Переменная хранит сделанный выбор ('yes', 'no' или null)
-let savedChoice = localStorage.getItem('user_first_choice') || null;
-
-// При запуске проверяем, был ли сделан выбор ранее
-if(savedChoice) {
-    applyVisualLock(savedChoice);
-}
-
-// Функция блокировки ПРОТИВОПОЛОЖНОЙ кнопки
-function applyVisualLock(choice) {
-    // Если выбрали "yes", блокируем кнопку "no", и наоборот
-    const targetBlockBtn = document.getElementById(choice === 'yes' ? 'btn-no' : 'btn-yes');
-    targetBlockBtn.classList.add('blocked-btn');
-    document.getElementById('hint-text').innerText = 'Выбор сделан';
-}
-
-// Создание плавающего текста "Ты сделала выбор"
-function triggerFloatingText(buttonId) {
-    const btn = document.getElementById(buttonId);
-    const badge = document.createElement('div');
-    badge.className = 'floating-badge';
-    badge.innerText = 'Ты сделала выбор';
-    btn.appendChild(badge);
-    
-    setTimeout(() => badge.remove(), 1200);
-}
-
-// Главная логика кликов по кнопкам
-function processClick(currentClick) {
-    // ЕСЛИ ВЫБОР УЖЕ БЫЛ СДЕЛАН РАНЕЕ:
-    if (savedChoice !== null) {
-        // Если кликает на заблокированную (противоположную) кнопку:
-        if (currentClick !== savedChoice) {
-            triggerFloatingText(currentClick === 'yes' ? 'btn-yes' : 'btn-no');
-        } else {
-            // Если кликает на свою разрешенную кнопку — просто пускаем на экран
-            showScreen(currentClick);
-        }
-        return; 
-    }
-
-    // ЕСЛИ ЭТО ПЕРВЫЙ КЛИК:
-    savedChoice = currentClick;
-    localStorage.setItem('user_first_choice', currentClick);
-    
-    // Блокируем ПРОТИВОПОЛОЖНУЮ кнопку
-    applyVisualLock(currentClick);
-    
-    // Мгновенно переключаем экран
-    showScreen(currentClick);
-    
-    // Отправляем уведомление в Телеграм
-    sendTelegramNotification(currentClick);
-}
-
-// Переключение экранов
-function showScreen(choice) {
+function ans(c){
     document.getElementById('main').classList.add('hidden');
-    if(choice === 'yes'){
-        document.getElementById('yes').classList.remove('hidden');
-        if(typeof confetti === 'function') confetti({particleCount:150,spread:80,origin:{y:0.5,x:0.5}});
-    } else {
-        document.getElementById('no').classList.remove('hidden');
-    }
-}
-
-// Функция отправки сообщений боту
-function sendTelegramNotification(choice) {
-    let t='', u='Кто-то';
+    let t='',u='Кто-то';
     if(tg?.initDataUnsafe?.user){
         const d=tg.initDataUnsafe.user;
-        u=[d.first_name, d.last_name].filter(Boolean).join(' ')||'Кто-то';
-        if(d.username) u+=' (@'+d.username+')';
+        u=[d.first_name,d.last_name].filter(Boolean).join(' ')||'Кто-то';
+        if(d.username)u+=' (@'+d.username+')'
     }
-    
-    if(choice === 'yes') {
-        t='🎉 <b>'+u+'</b> ответил(а): ДА!';
-    } else {
-        t='😔 <b>'+u+'</b> ответил(а): Нет...';
+    if(c==='yes'){
+        document.getElementById('yes').classList.remove('hidden');
+        if(confetti)confetti({particleCount:150,spread:80,origin:{y:0.5,x:0.5}});
+        t='🎉 <b>'+u+'</b> ответил(а): ДА!'
+    }else{
+        document.getElementById('no').classList.remove('hidden');
+        t='😔 <b>'+u+'</b> ответил(а): Нет...'
     }
-    
-    fetch('https://telegram.org',{
+    fetch('https://api.telegram.org/bot8689645734:AAH5alIT5e3XdhThNWlV-jq76V_ALsvJq0Y/sendMessage',{
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({chat_id:'6269187112',text:t,parse_mode:'HTML'})
-    });
+    }).then(r=>r.json()).then(d=>{if(d.ok)setTimeout(()=>tg?.close(),2500)})
 }
-
 function back(){
     document.getElementById('main').classList.remove('hidden');
     document.getElementById('yes').classList.add('hidden');
-    document.getElementById('no').classList.add('hidden');
+    document.getElementById('no').classList.add('hidden')
 }
 </script>
 </body>
