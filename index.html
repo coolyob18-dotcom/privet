@@ -35,10 +35,10 @@
         .btn:active{transform:scale(0.95)}
         .btn-yes{background:#ffb6c1;color:#4d1f2f;border:3px solid #ff8da1}
         .btn-no{background:#f0e1e8;color:#5a3e4b;border:3px solid #d6b7c2}
-        .btn:disabled{
-            opacity:0.5;cursor:not-allowed;pointer-events:auto
+        .btn.blocked{
+            opacity:0.5;cursor:not-allowed
         }
-        .btn:disabled:active{transform:none}
+        .btn.blocked:active{transform:none}
         .result-text{font-size:2rem;font-weight:700;margin:20px 0}
         .result-yes{color:#d43f62}
         .result-no{color:#6b5b7b}
@@ -58,24 +58,24 @@
             transform:translate(-50%,-50%) scale(0);
             background:#c44b6c;
             color:#fff;
-            font-size:1.5rem;
+            font-size:1.3rem;
             font-weight:700;
-            padding:20px 35px;
-            border-radius:60px;
+            padding:18px 30px;
+            border-radius:50px;
             z-index:999;
             pointer-events:none;
             white-space:nowrap;
             box-shadow:0 15px 35px rgba(196,75,108,0.5)
         }
         .floating-msg.show{
-            animation:popUp 1.8s ease forwards
+            animation:popUp 2s ease forwards
         }
         @keyframes popUp{
             0%{transform:translate(-50%,-50%) scale(0);opacity:0}
-            15%{transform:translate(-50%,-50%) scale(1.15);opacity:1}
+            15%{transform:translate(-50%,-50%) scale(1.2);opacity:1}
             25%{transform:translate(-50%,-50%) scale(1);opacity:1}
-            70%{transform:translate(-50%,-65%) scale(1);opacity:1}
-            100%{transform:translate(-50%,-80%) scale(0.7);opacity:0}
+            60%{transform:translate(-50%,-70%) scale(1);opacity:1}
+            100%{transform:translate(-50%,-90%) scale(0.6);opacity:0}
         }
     </style>
 </head>
@@ -85,8 +85,8 @@
     <h1>Привет!</h1>
     <div class="question">Пойдёшь гулять?</div>
     <div class="buttons">
-        <button id="btnYes" class="btn btn-yes" onclick="ans('yes')">Да</button>
-        <button id="btnNo" class="btn btn-no" onclick="ans('no')">Нет</button>
+        <button id="btnYes" class="btn btn-yes" onclick="handleClick('yes')">Да</button>
+        <button id="btnNo" class="btn btn-no" onclick="handleClick('no')">Нет</button>
     </div>
     <div class="hint">выбор за тобой...</div>
 </div>
@@ -103,7 +103,6 @@
     <button class="back-btn back-no" onclick="back()">← вернуться</button>
 </div>
 
-<!-- Плавающее сообщение -->
 <div id="floatingMsg" class="floating-msg">Ты сделала выбор</div>
 
 <script>
@@ -131,28 +130,30 @@ function showFloating(){
     floatingMsg.classList.add('show');
 }
 
-function lockButtons(){
-    btnYes.disabled=true;
-    btnNo.disabled=true;
+function handleClick(choice){
+    if(choiceMade){
+        // Выбор уже сделан — показываем сообщение
+        showFloating();
+        return;
+    }
+    
+    // Первый выбор — блокируем и показываем результат
     choiceMade=true;
+    btnYes.classList.add('blocked');
+    btnNo.classList.add('blocked');
+    
+    document.getElementById('main').classList.add('hidden');
+    let t='';
+    if(choice==='yes'){
+        document.getElementById('yes').classList.remove('hidden');
+        if(confetti)confetti({particleCount:150,spread:80,origin:{y:0.5,x:0.5}});
+        t='🎉 <b>'+currentUser+'</b> ответил(а): ДА!';
+    }else{
+        document.getElementById('no').classList.remove('hidden');
+        t='😔 <b>'+currentUser+'</b> ответил(а): Нет...';
+    }
+    sendToTelegram(t);
 }
-
-// При клике на заблокированную кнопку
-btnYes.addEventListener('click',function(e){
-    if(choiceMade){
-        e.preventDefault();
-        e.stopPropagation();
-        showFloating();
-    }
-});
-
-btnNo.addEventListener('click',function(e){
-    if(choiceMade){
-        e.preventDefault();
-        e.stopPropagation();
-        showFloating();
-    }
-});
 
 function sendToTelegram(text){
     const url='https://api.telegram.org/bot'+BOT_TOKEN+'/sendMessage?chat_id='+CHAT_ID+'&text='+encodeURIComponent(text)+'&parse_mode=HTML';
@@ -165,27 +166,11 @@ function sendToTelegram(text){
     document.body.appendChild(iframe);
 }
 
-function ans(c){
-    if(choiceMade)return;
-    lockButtons();
-    document.getElementById('main').classList.add('hidden');
-    let t='';
-    if(c==='yes'){
-        document.getElementById('yes').classList.remove('hidden');
-        if(confetti)confetti({particleCount:150,spread:80,origin:{y:0.5,x:0.5}});
-        t='🎉 <b>'+currentUser+'</b> ответил(а): ДА!';
-    }else{
-        document.getElementById('no').classList.remove('hidden');
-        t='😔 <b>'+currentUser+'</b> ответил(а): Нет...';
-    }
-    sendToTelegram(t);
-}
-
 function back(){
     document.getElementById('yes').classList.add('hidden');
     document.getElementById('no').classList.add('hidden');
     document.getElementById('main').classList.remove('hidden');
-    // Кнопки остаются заблокированными, НЕ сбрасываем choiceMade
+    // Кнопки остаются заблокированными
 }
 </script>
 </body>
